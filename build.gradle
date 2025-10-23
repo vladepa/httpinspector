@@ -7,7 +7,7 @@ plugins {
 
 group = 'io.vladepa'
 version = '0.0.1-SNAPSHOT'
-description = 'HTTP reqest, response inspector'
+description = 'HTTP request, response inspector'
 
 java {
 	toolchain {
