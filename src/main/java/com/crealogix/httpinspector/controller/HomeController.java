@@ -1,5 +1,6 @@
 package io.vladepa.httpinspector.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,26 +11,32 @@ import java.util.List;
 @Controller
 public class HomeController {
 
+    @Value("${app.show-actuator-endpoints:false}")
+    private boolean showActuatorEndpoints;
+
     @GetMapping("/")
     public String home(Model model) {
-        List<EndpointInfo> endpoints = new ArrayList<>();
+        List<EndpointInfo> inspectorEndpoints = new ArrayList<>();
+        List<EndpointInfo> actuatorEndpoints = new ArrayList<>();
         
         // HTTP Inspector endpoints
-        endpoints.add(new EndpointInfo("GET", "/inspector/request", "Get detailed information about the current HTTP request"));
-        endpoints.add(new EndpointInfo("POST", "/inspector/echo", "Echo the request back as a response for testing purposes"));
-        endpoints.add(new EndpointInfo("GET", "/inspector/headers", "Get all request headers"));
-        endpoints.add(new EndpointInfo("GET", "/inspector/parameters", "Get request parameters"));
-        endpoints.add(new EndpointInfo("GET", "/inspector/client", "Get client information"));
-        endpoints.add(new EndpointInfo("GET", "/inspector/health", "Health check endpoint"));
-        endpoints.add(new EndpointInfo("GET", "/inspector/status", "Return response with status code based on query parameter (e.g., ?code=404)"));
+        inspectorEndpoints.add(new EndpointInfo("GET", "/inspector/request", "Get detailed information about the current HTTP request"));
+        inspectorEndpoints.add(new EndpointInfo("POST", "/inspector/echo", "Echo the request back as a response for testing purposes"));
+        inspectorEndpoints.add(new EndpointInfo("GET", "/inspector/headers", "Get all request headers"));
+        inspectorEndpoints.add(new EndpointInfo("GET", "/inspector/parameters", "Get request parameters"));
+        inspectorEndpoints.add(new EndpointInfo("GET", "/inspector/client", "Get client information"));
+        inspectorEndpoints.add(new EndpointInfo("GET", "/inspector/health", "Health check endpoint"));
+        inspectorEndpoints.add(new EndpointInfo("GET", "/inspector/status", "Return response with status code based on query parameter (e.g., ?code=404)"));
         
         // Actuator endpoints
-        endpoints.add(new EndpointInfo("GET", "/actuator/env", "Environment variables and properties"));
-        endpoints.add(new EndpointInfo("GET", "/actuator/health", "Application health status"));
-        endpoints.add(new EndpointInfo("GET", "/actuator/info", "Application information"));
-        endpoints.add(new EndpointInfo("GET", "/actuator/metrics", "Application metrics"));
+        actuatorEndpoints.add(new EndpointInfo("GET", "/actuator/env", "Environment variables and properties"));
+        actuatorEndpoints.add(new EndpointInfo("GET", "/actuator/health", "Application health status"));
+        actuatorEndpoints.add(new EndpointInfo("GET", "/actuator/info", "Application information"));
+        actuatorEndpoints.add(new EndpointInfo("GET", "/actuator/metrics", "Application metrics"));
         
-        model.addAttribute("endpoints", endpoints);
+        model.addAttribute("inspectorEndpoints", inspectorEndpoints);
+        model.addAttribute("actuatorEndpoints", showActuatorEndpoints ? actuatorEndpoints : new ArrayList<>());
+        model.addAttribute("showActuatorEndpoints", showActuatorEndpoints);
         model.addAttribute("appName", "HTTP Inspector");
         model.addAttribute("appDescription", "A Spring Boot application for inspecting HTTP requests and responses");
         

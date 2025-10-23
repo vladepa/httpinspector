@@ -151,7 +151,7 @@
         <div class="content">
             <div class="section">
                 <h2>🔍 HTTP Inspector Endpoints</h2>
-                <div th:each="endpoint : ${endpoints}" class="endpoint">
+                <div th:each="endpoint : ${inspectorEndpoints}" class="endpoint">
                     <span class="method" th:classappend="${endpoint.method.toLowerCase()}" 
                           th:text="${endpoint.method}">GET</span>
                     <a class="path" th:href="${endpoint.path}" th:text="${endpoint.path}">/inspector/request</a>
@@ -163,12 +163,12 @@
                 </div>
             </div>
             
-            <div class="section">
+            <div class="section" th:if="${showActuatorEndpoints}">
                 <h2>📊 Actuator Endpoints</h2>
                 <p style="color: #6c757d; margin-bottom: 20px;">
                     Spring Boot Actuator provides production-ready features to help you monitor and manage your application.
                 </p>
-                <div th:each="endpoint : ${endpoints}" class="endpoint" th:if="${endpoint.path.startsWith('/actuator')}">
+                <div th:each="endpoint : ${actuatorEndpoints}" class="endpoint">
                     <span class="method get" th:text="${endpoint.method}">GET</span>
                     <a class="path" th:href="${endpoint.path}" th:text="${endpoint.path}">/actuator/env</a>
                     <div class="description" th:text="${endpoint.description}">Environment variables and properties</div>
