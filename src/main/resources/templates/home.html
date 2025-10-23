@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${appName}">HTTP Inspector</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section h2 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .endpoint {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .endpoint:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .method {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-right: 15px;
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .method.get {
+            background: #28a745;
+            color: white;
+        }
+        
+        .method.post {
+            background: #007bff;
+            color: white;
+        }
+        
+        .method.put {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .method.delete {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .path {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #495057;
+        }
+        
+        .description {
+            margin-top: 8px;
+            color: #6c757d;
+            font-size: 0.95rem;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: white;
+            opacity: 0.8;
+        }
+        
+        .example {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 4px;
+        }
+        
+        .example code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 th:text="${appName}">HTTP Inspector</h1>
+            <p th:text="${appDescription}">A Spring Boot application for inspecting HTTP requests and responses</p>
+        </div>
+        
+        <div class="content">
+            <div class="section">
+                <h2>🔍 HTTP Inspector Endpoints</h2>
+                <div th:each="endpoint : ${endpoints}" class="endpoint">
+                    <span class="method" th:classappend="${endpoint.method.toLowerCase()}" 
+                          th:text="${endpoint.method}">GET</span>
+                    <a class="path" th:href="${endpoint.path}" th:text="${endpoint.path}">/inspector/request</a>
+                    <div class="description" th:text="${endpoint.description}">Get detailed information about the current HTTP request</div>
+                    
+                    <div th:if="${endpoint.path == '/inspector/status'}" class="example">
+                        <strong>Example:</strong> <code>GET /inspector/status?code=404&message=Not Found</code>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>📊 Actuator Endpoints</h2>
+                <p style="color: #6c757d; margin-bottom: 20px;">
+                    Spring Boot Actuator provides production-ready features to help you monitor and manage your application.
+                </p>
+                <div th:each="endpoint : ${endpoints}" class="endpoint" th:if="${endpoint.path.startsWith('/actuator')}">
+                    <span class="method get" th:text="${endpoint.method}">GET</span>
+                    <a class="path" th:href="${endpoint.path}" th:text="${endpoint.path}">/actuator/env</a>
+                    <div class="description" th:text="${endpoint.description}">Environment variables and properties</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>🚀 Ready to inspect HTTP requests and responses!</p>
+        </div>
+    </div>
+</body>
+</html>
