@@ -26,14 +26,14 @@ A Spring Boot application for inspecting HTTP requests and responses. This tool 
 | `GET` | `/inspector/health` | Health check endpoint |
 | `GET` | `/inspector/status` | Return response with status code based on query parameter |
 
-### Actuator Endpoints (Optional)
+### Actuator Endpoints (Optional - Port 8181)
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `GET` | `/actuator/env` | Environment variables and properties |
-| `GET` | `/actuator/health` | Application health status |
-| `GET` | `/actuator/info` | Application information |
-| `GET` | `/actuator/metrics` | Application metrics |
+| `GET` | `http://localhost:8181/actuator/env` | Environment variables and properties |
+| `GET` | `http://localhost:8181/actuator/health` | Application health status |
+| `GET` | `http://localhost:8181/actuator/info` | Application information (custom app details) |
+| `GET` | `http://localhost:8181/actuator/metrics` | Application metrics |
 
 ## ⚙️ Configuration
 
@@ -49,6 +49,7 @@ spring.application.name=httpinspector
 management.endpoints.web.exposure.include=env,health,info,metrics
 management.endpoint.env.show-values=always
 management.endpoint.env.show-details=always
+management.server.port=8181
 
 # Application configuration
 app.show-actuator-endpoints=false
@@ -146,6 +147,65 @@ The application includes:
 - **Docker Compose** for easy deployment
 - **Health checks** for container monitoring
 - **Non-root user** for security
+
+## 📊 Info Endpoint
+
+The `/actuator/info` endpoint provides comprehensive application information:
+
+### Static Configuration (application.properties)
+```properties
+info.app.name=HTTP Inspector
+info.app.description=A Spring Boot application for inspecting HTTP requests and responses
+info.app.version=0.0.1-SNAPSHOT
+info.app.author=vladepa
+info.app.contact=io.vladepa
+info.app.license=MIT
+```
+
+### Dynamic Information
+The info endpoint also includes:
+- **Runtime details**: Java version, OS information, startup time
+- **Application features**: List of capabilities
+- **Endpoint summary**: Count of available endpoints
+- **Port configuration**: Application and management ports
+- **Docker support**: Container deployment information
+- **Repository links**: GitHub repository, issues, documentation
+
+### Example Response
+```json
+{
+  "app": {
+    "name": "HTTP Inspector",
+    "description": "A Spring Boot application for inspecting HTTP requests and responses",
+    "version": "0.0.1-SNAPSHOT",
+    "author": "vladepa",
+    "features": [
+      "HTTP Request Inspection",
+      "Response Testing",
+      "Client Analysis",
+      "Health Monitoring",
+      "Docker Support",
+      "Modern UI"
+    ],
+    "endpoints": {
+      "http-inspector": 7,
+      "actuator": 4,
+      "total": 11
+    },
+    "ports": {
+      "application": 8080,
+      "management": 8181
+    },
+    "runtime": {
+      "java-version": "17.0.2",
+      "os-name": "Linux",
+      "startup-time": "2024-01-15T10:30:45"
+    },
+    "status": "UP",
+    "ready": true
+  }
+}
+```
 
 ## 📊 Usage Examples
 

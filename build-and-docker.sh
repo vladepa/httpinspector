@@ -11,9 +11,13 @@ echo "📦 Building JAR file..."
 if [ $? -eq 0 ]; then
     echo "✅ Build successful!"
     
+    # Get the version from the build.gradle file
+    version=$(./gradlew properties | awk -F': ' '/version:/{print $2}')
+    echo "Version: $version"
+
     # Build Docker image
     echo "🐳 Building Docker image..."
-    docker build -t httpinspector .
+    docker build -t httpinspector:$version .
     
     if [ $? -eq 0 ]; then
         echo "✅ Docker image built successfully!"

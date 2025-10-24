@@ -28,11 +28,11 @@ public class HomeController {
         inspectorEndpoints.add(new EndpointInfo("GET", "/inspector/health", "Health check endpoint"));
         inspectorEndpoints.add(new EndpointInfo("GET", "/inspector/status", "Return response with status code based on query parameter (e.g., ?code=404)"));
         
-        // Actuator endpoints
-        actuatorEndpoints.add(new EndpointInfo("GET", "/actuator/env", "Environment variables and properties"));
-        actuatorEndpoints.add(new EndpointInfo("GET", "/actuator/health", "Application health status"));
-        actuatorEndpoints.add(new EndpointInfo("GET", "/actuator/info", "Application information"));
-        actuatorEndpoints.add(new EndpointInfo("GET", "/actuator/metrics", "Application metrics"));
+        // Actuator endpoints (on separate port 8181)
+        actuatorEndpoints.add(new EndpointInfo("GET", "http://localhost:8181/actuator/env", "Environment variables and properties"));
+        actuatorEndpoints.add(new EndpointInfo("GET", "http://localhost:8181/actuator/health", "Application health status"));
+        actuatorEndpoints.add(new EndpointInfo("GET", "http://localhost:8181/actuator/info", "Application information"));
+        actuatorEndpoints.add(new EndpointInfo("GET", "http://localhost:8181/actuator/metrics", "Application metrics"));
         
         model.addAttribute("inspectorEndpoints", inspectorEndpoints);
         model.addAttribute("actuatorEndpoints", showActuatorEndpoints ? actuatorEndpoints : new ArrayList<>());
