@@ -139,6 +139,43 @@
             border-radius: 3px;
             font-family: 'Courier New', monospace;
         }
+        
+        .parameters-toggle {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .parameters-toggle:hover {
+            background: #0056b3;
+        }
+        
+        .parameters-content {
+            margin-top: 10px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .parameters-content.collapsed {
+            display: none;
+        }
+        
+        .toggle-icon {
+            margin-left: 5px;
+            transition: transform 0.3s ease;
+        }
+        
+        .toggle-icon.expanded {
+            transform: rotate(180deg);
+        }
     </style>
 </head>
 <body>
@@ -158,7 +195,35 @@
                     <div class="description" th:text="${endpoint.description}">Get detailed information about the current HTTP request</div>
                     
                     <div th:if="${endpoint.path == '/inspector/status'}" class="example">
-                        <strong>Example:</strong> <code>GET /inspector/status?code=404&message=Not Found</code>
+                        <button class="parameters-toggle" onclick="toggleParameters('status')">
+                            Parameters
+                            <span class="toggle-icon" id="status-toggle-icon">▼</span>
+                        </button>
+                        <div id="status-parameters" class="parameters-content collapsed">
+                            <div style="margin-bottom: 10px;">
+                                <label for="statusCode" style="display: block; margin-bottom: 5px; font-weight: bold;">Status Code:</label>
+                                <input type="number" id="statusCode" value="200" min="100" max="599" 
+                                       style="width: 100px; padding: 5px; border: 1px solid #ccc; border-radius: 4px; margin-right: 10px;">
+                                <span style="color: #666; font-size: 0.9rem;">(100-599)</span>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label for="statusMessage" style="display: block; margin-bottom: 5px; font-weight: bold;">Message (optional):</label>
+                                <input type="text" id="statusMessage" placeholder="Custom message" 
+                                       style="width: 300px; padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
+                            </div>
+                            <button onclick="testStatusEndpoint()" 
+                                    style="background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-right: 10px;">
+                                Test Status Endpoint
+                            </button>
+                            <button onclick="copyStatusUrl()" 
+                                    style="background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+                                Copy URL
+                            </button>
+                            <div id="statusResult" style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 4px; display: none;">
+                                <strong>Response:</strong>
+                                <pre id="statusResponse" style="margin-top: 5px; white-space: pre-wrap; font-family: monospace;"></pre>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -180,5 +245,79 @@
             <p>🚀 Ready to inspect HTTP requests and responses!</p>
         </div>
     </div>
+
+    <script>
+        function toggleParameters(endpointId) {
+            const content = document.getElementById(endpointId + '-parameters');
+            const icon = document.getElementById(endpointId + '-toggle-icon');
+            
+            if (content.classList.contains('collapsed')) {
+                content.classList.remove('collapsed');
+                icon.classList.add('expanded');
+            } else {
+                content.classList.add('collapsed');
+                icon.classList.remove('expanded');
+            }
+        }
+        
+        function testStatusEndpoint() {
+            const statusCode = document.getElementById('statusCode').value;
+            const statusMessage = document.getElementById('statusMessage').value;
+            const resultDiv = document.getElementById('statusResult');
+            const responsePre = document.getElementById('statusResponse');
+            
+            // Build URL with parameters
+            let url = '/inspector/status?code=' + encodeURIComponent(statusCode);
+            if (statusMessage && statusMessage.trim()) {
+                url += '&message=' + encodeURIComponent(statusMessage.trim());
+            }
+            
+            // Show loading state
+            responsePre.textContent = 'Loading...';
+            resultDiv.style.display = 'block';
+            
+            // Make the request
+            fetch(url)
+                .then(response => {
+                    return response.json().then(data => ({
+                        status: response.status,
+                        statusText: response.statusText,
+                        data: data
+                    }));
+                })
+                .then(result => {
+                    const responseText = `Status: ${result.status} ${result.statusText}\n\nResponse Body:\n${JSON.stringify(result.data, null, 2)}`;
+                    responsePre.textContent = responseText;
+                })
+                .catch(error => {
+                    responsePre.textContent = `Error: ${error.message}`;
+                });
+        }
+        
+        function copyStatusUrl() {
+            const statusCode = document.getElementById('statusCode').value;
+            const statusMessage = document.getElementById('statusMessage').value;
+            
+            let url = window.location.origin + '/inspector/status?code=' + encodeURIComponent(statusCode);
+            if (statusMessage && statusMessage.trim()) {
+                url += '&message=' + encodeURIComponent(statusMessage.trim());
+            }
+            
+            navigator.clipboard.writeText(url).then(() => {
+                // Show temporary feedback
+                const button = event.target;
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.style.background = '#28a745';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '#28a745';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy URL: ', err);
+                alert('Failed to copy URL to clipboard');
+            });
+        }
+    </script>
 </body>
 </html>
